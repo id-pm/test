@@ -3,11 +3,11 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*' # Спрацьовує на теги v1.0.0, v1.1.0 тощо
+      - 'v*'
 
 jobs:
   build:
-    runs-on: windows-latest # Velopack потребує Windows для пакування WPF
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
@@ -18,7 +18,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x' # Вкажіть вашу версію .NET (6.0, 7.0 або 8.0)
+        dotnet-version: '9.0.x'
 
     - name: Install Velopack CLI
       run: dotnet tool install -g vpk
