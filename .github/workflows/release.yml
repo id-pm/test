@@ -1,0 +1,39 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Спрацьовує на теги v1.0.0, v1.1.0 тощо
+
+jobs:
+  build:
+    runs-on: windows-latest # Velopack потребує Windows для пакування WPF
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Потрібно для правильного визначення попередніх версій
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Вкажіть вашу версію .NET (6.0, 7.0 або 8.0)
+
+    - name: Install Velopack CLI
+      run: dotnet tool install -g vpk
+
+    - name: Publish WPF App
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Create Velopack Release
+  
+      run: |
+        vpk pack --packId "Updater" --packVersion ${{ github.ref_name }} --packDir "./publish" --mainExe "Updater.exe" --releaseDir "./Releases"
+
+    - name: Upload to GitHub Releases
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./Releases/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
