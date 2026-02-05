@@ -10,37 +10,36 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # Потрібно для правильного визначення попередніх версій
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
 
-    - name: Install Velopack CLI
-      run: dotnet tool install -g vpk
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk
 
-    - name: Publish WPF App
-      run: dotnet publish -c Release -o ./publish
+      - name: Publish WPF App
+        run: dotnet publish -c Release -o ./publish
 
-   - name: Create Velopack Release
-      run: |
-        $ver = "${{ github.ref_name }}".TrimStart('v')
-        
-        vpk pack `
-          --packId "Updater" `
-          --packVersion $ver `
-          --packDir "./publish" `
-          --mainExe "Updater.exe" `
-          --output "./Releases"
-      shell: pwsh
+      - name: Create Velopack Release
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}".TrimStart('v')
+          vpk pack `
+            --packId "Updater" `
+            --packVersion $ver `
+            --packDir "./publish" `
+            --mainExe "Updater.exe" `
+            --output "./Releases"
 
-    - name: Upload to GitHub Releases
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ./Releases/*
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload to GitHub Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./Releases/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
