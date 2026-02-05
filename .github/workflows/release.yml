@@ -26,10 +26,17 @@ jobs:
     - name: Publish WPF App
       run: dotnet publish -c Release -o ./publish
 
-    - name: Create Velopack Release
-  
+   - name: Create Velopack Release
       run: |
-        vpk pack --packId "Updater" --packVersion ${{ github.ref_name }} --packDir "./publish" --mainExe "Updater.exe" --releaseDir "./Releases"
+        $ver = "${{ github.ref_name }}".TrimStart('v')
+        
+        vpk pack `
+          --packId "Updater" `
+          --packVersion $ver `
+          --packDir "./publish" `
+          --mainExe "Updater.exe" `
+          --output "./Releases"
+      shell: pwsh
 
     - name: Upload to GitHub Releases
       uses: softprops/action-gh-release@v1
